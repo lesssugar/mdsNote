@@ -350,3 +350,87 @@ redis-check-aof --fix appendonly.aof
 //同理一样的另一个文件
 ```
 
+# 事物
+
+```java
+MUTIL		//begin
+EXEC		//commit
+WATCH 		//监视在事务执行开启前有没有别的客户端对值进行了修改
+watch	balance
+UNWATCH		//取消所有key的监控
+DISCARD		//rollback
+```
+
+# 主从复制，读写分离
+
+```java
+复制多份配置文件
+修改项		
+端口号
+pid
+logfile “6380.log”
+dbfilename dump6380.rdb
+```
+
+```java
+info replication	//查看多个数据库的信息
+role	//角色，默认都是master
+子数据库中	SLAVEOF	127.0.0.1 主机端口号，信息会全部进行复制
+重点，子数据库不能写，只能读取数据
+```
+
+## 数据库宕机
+
+```java
+默认配置下，如果主机宕机，子数据库会保持原有状态，主机回复链接，回复原有状态
+子数据库宕机后，连回来后需要重新SLAVEOF进行连接
+```
+
+## 子数据库可以作为数据源
+
+```java
+可以使用一个slave作为其他slave的数据源，这样的情况下，主机分配给几个，几个继续向下复制，可以减少主机压力
+```
+
+## 子数据库成为父数据库
+
+```java
+SLAVE no one
+//主机连回来后依旧是master但是不连着子数据库，可以成为slave
+```
+
+# 复制原理
+
+- slave启动后成功连接到master会发送一个sync
+- master接到命令后启动后台的存盘进程,同时搜集所有的用于修改数据集的命令集，在后台进程执行完毕后，master将整个数据库文件发送到slave完成一次同步
+- 首次连接到master全量复制master数据
+- 以后同步数据采用增量同步的方式
+- 只要重新连接到master，就会进行全量同步同步数据
+
+# 哨兵模式
+
+在后台监视主机是否故障，在故障后通过投票的方式选择一个从库成为主库
+
+```java
+//在redis下创建
+touch sentinel.conf	//文件
+vim sentinel.conf
+sentinel monitor 自己起被监控的数据库的名称 127.0.0.1 6379 1
+//1代表票数，谁的票数多余1票以上谁就成为新的主机
+在bin文件夹下启动	redis-sentinel /envConfig/redis/centinel.conf
+//原来master回来后成为slave
+```
+
+# Jedis
+
+## 连接出现connection refuse
+
+```java
+chkconfig iptables off	//关闭防火墙
+修改redis.conf配置文件，将端口号127.0.0.1注释掉
+protected-mode yes 改为no
+Jedis jedis = new Jedis("192.168.10.56",6379);
+```
+
+
+
