@@ -34,6 +34,12 @@ NAT模式:windows下会多出一个IP地址	192.168.100.xx不会占用初始的I
 
 主机模式:此时linux是一个独立的主机，不能访问外网
 
+## Centos 7的安装
+
+```java
+https://www.cnblogs.com/wcwen1990/p/7630545.html	//基本安装及网络的配置
+```
+
 # 使用
 
 ## 安装vmtools
