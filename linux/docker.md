@@ -62,7 +62,7 @@ docker pull tomcat
 docker rmi hello-world
 docker rmi ${docker images -qa}	//删除某个镜像的全部镜像
 docker commit //提交容器副本成为一个新的镜像
-docker commit -a="wyq" -m="del docs tomcat" bac73cf399c4  wyq/tomcat:0.1	//将正在运行的镜像打包成一个新的镜像
+docker commit -a="wyq" -m="del docs tomcat" bac73cf399c4  wyq/tomcat:0.1	//将正在运行的镜像打包成一个新的镜像	
 ```
 
 # 容器的操作
@@ -119,3 +119,18 @@ UnionFS	联合文件系统，它支持对文件系统的修改作为一次提交
 ## rootfs
 
 在bootfs之上就是rootfs，包含典型Linux系统中的/dev，/proc,/bin，/etc等标准文件和目录，rootfs就是各种	不同的操作系统发行版，如Ubantu,centos,精简的OS,rootfs可以很小，只需要包含基本的命令，工具程序库即可，因为底层直接用Host的kernel,自己只需要提供rootfs即可，由此可见对于不同的系统，bootfs基本一致，rootfs千差万别，因此不同的系统可以共用一个bootfs
+
+# 容器数据卷
+
+一些容器运行的时候产生的数据我们希望对齐进行持久化，就使用数据卷来进行保存
+
+- 数据卷可以再容器之间共享或者重用数据
+- 卷中的更改可以直接生效
+- 数据卷中的更新不会直接包含在镜像中
+- 数据卷的生命周期会一直持续到没有容器使用它为止
+
+## 添加方式
+
+命令行添加
+
+dockerFile添加
