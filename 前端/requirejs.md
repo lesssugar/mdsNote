@@ -22,8 +22,8 @@ define('helper',['jquery'],function($){
 当我们设置了data-main后
 
 ```javascript
+//data-main标明了网页的入口js文件是哪一个,该文件会第一个被require.js文件所加载
 <script data-main="js/app" src="js/requirejs.js" ></script>
-//不定义路径底下模块在引用的时候回找不到路径
 
 //在一个文件中写上该属性，该js文件中所有引入模块的路径就是基于这个
 requirejs.config({

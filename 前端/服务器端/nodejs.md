@@ -134,13 +134,14 @@ test		//单元测试
   },
   "license": "Artistic-2.0"
 }
-
+//版本号前面的符号，~,^,*,版本号1.0.0，补丁更新，最后一位改动，小版本更新，第二位改动，大版本的更新第一位改动，如果你仅接受补丁改动~,接受小版本的改动^，接受大版本的改动*
 ```
 
 # NPM(node package manager)
 
 ```less
-npm -v	
+npm -v
+npm install npm@latest -g	//nmp更新
 npm version	//查看所有模块的版本
 npm search xxx	//搜索包名，搜索math查询到和math有关的包
 ```
@@ -149,12 +150,19 @@ npm search xxx	//搜索包名，搜索math查询到和math有关的包
 
 ```less
 npm init //先创建一个package.json文件，名字不要有大写字母
+npm init --yes	//只创建文件，不回答问题
 npm install xxx	//根据包名进行安装,会出现node_moudles文件夹,里面就是下载的模块
 npm i math	//install的简写
 npm i math --save  ****重要，下载一个包的同时将他添加到依赖中***
 npm i //会根据依赖下载包，下载的项目都需要先install
 npm remove math	//移除一个包		r 简写
-npm install 包名 -g //全局安装，一般都是一些工具，不是项目中用的，用的少
+npm install 包名[@1.10] [] //全局安装，一般都是一些工具，不是项目中用的，用的少
+					  -g
+					  -dev
+					  --save-dev
+					  --production
+npm outdated		//查看包的更新
+npm update [name]	//更新某个包或者所有包
 ```
 
 ##包的调用
