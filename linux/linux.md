@@ -20,9 +20,9 @@ CentOs		Redhat		Ubuntu		Suse		红旗Linux
 
 在内存中划分空间，在空间里安装系统，安装好的系统可以移植
 
-##CentOs
+## CentOs
 
-##初始化设置
+## 初始化设置
 
 安装好后分配2G内存，双处理器，每个处理器；两核心，
 
@@ -40,6 +40,14 @@ NAT模式:windows下会多出一个IP地址	192.168.100.xx不会占用初始的I
 https://www.cnblogs.com/wcwen1990/p/7630545.html	//基本安装及网络的配置
 systemctl stop firewalld	//关闭当前正在运行的防火墙
 systemctl disable firewalld	//禁用开机启动的防火墙
+```
+
+## SecureCRT
+
+```bash
+yum -y install lrzsz	//安装软件
+rz	//到达指定目录后rz即可上传文件
+sz	//可以下载文件到本地
 ```
 
 # 使用
@@ -413,7 +421,7 @@ lsblk -f	listblock -f	//老师不离开
 
 ## 实现挂载
 
-###分区
+### 分区
 
 虚拟机设置添加自己所需要大小的硬盘,查看分区列表就会多出自己的分区，但是还没有挂载
 
@@ -447,7 +455,7 @@ mount /dev/sdb1 /home/newdisk
 umount /dev/sdb1	//取消挂载
 ```
 
-###设置永久挂载
+### 永久挂载
 
 ```java
 vim /etc/fstab
@@ -455,7 +463,7 @@ vim /etc/fstab
 /dev/sdb1			/home/newdisk	ext4	defaults	0	0
 ```
 
-##磁盘情况查询
+## 磁盘情况查询
 
 ```java
 df -h	//查询全部磁盘的使用情况
@@ -463,32 +471,249 @@ du -h	//查询某个目录磁盘占用情况
 du -ach --max-depth=1 /opt	//查询opt一级目录下
     -a //含文件
     -h //带计量单位
+    -c //查看总共占用，在最底下
     -s //指定目录占用的大小汇总
-    
+ls -l /home |grep "^-" | -wc	//统计某个目录下共有多少个文件
+    			 "^d"	//目录
+   -lR	//递归统计
 ```
 
-# 环境配置
+# 网络配置
 
-## java
+NAT网络原理:
 
-```java
-yum install java 		//安装java环境
+局域网通过网关连接到因特网，主机通过自己的网卡连接局域网，linux通过虚拟网卡连接主机，通过虚拟网络编辑器即可进行编辑ip
+
+## 自动连接配置
+
+系统	->		首选项		->		网络连接		->		选网卡，自动连接即可
+
+每次获取的ip地址不同，不适用于作为服务器
+
+## 手动配置环境
+
+vi /etc/sysconfig/network-scripts/ifcfg-eth0	//eth后面的编号代表第几块网卡
+
+BOOTPROTO=static	//以静态的方式获取固定的ip
+
+如果没有网关和DNS
+
+GATEWAY=192.168.184.2	//网关，和主机虚拟网卡保持一致
+
+DNS1=192.168.184.2		//和网关保持一致
+
+配置IP地址
+
+IPADDR=192.168.184.130
+
+ONBOOT=yes		//启用
+
+配置完成后
+
+service network restart	或者	reboot
+
+# 进程管理
+
+```bash
+ps //查看系统中有哪些进程正在执行
+	-a	//显示当前终端所有进程信息
+	-u	//以用户的格式显示进程信息
+	-x	//显示后台进程运行的参数
+ps -aux | more		或者 | grep xxx	或	| less	进行对应展示
+USER   PID %CPU 	%MEM    	VSZ   	RSS 		TTY      STAT START   	TIME COMMAND 
+root    1  0.0  	0.0  		19364   1552     	?        Ss   Aug18   	0:01 /sbin/init
+用户 进程id 占用cpu 占用内存	虚拟内存占用 物理内存占用 终端是哪个 运行状态 启动时间 占用cpu总计时间
+启用时命令行
+运行状态S:休眠 s:表示该进程是会话的先导进程 N:表示进程拥有比普通优先级更低的优先级	R：运行 D:短暂等待
+Z：将死进程	T:被跟踪或者被停止 
 ```
 
-##git
+## 查看父进程
 
-```java
-yum install git			//安装git
- git config --global user.name "lesssugar"	//配置
- git config --global user.email "lesssugar@aliyun.com"
- ssh-keygen -t rsa -C "lesssugar@aliyun.com"	//配置秘钥
+```bash
+ps -ef 		//查看父进程
 ```
 
-## maven
+# 终止进程
 
-```java
-官网复制	-bin.zip的文件包连接
-本地	wget 复制的地址
-unzip	解压缩文件包即可
+```bash
+kill [] 进程id
+	 -9		//强制终止某个进程
+killall 进程名称(支持通配符 x*)
+```
+
+# 服务
+
+```bash
+service 服务名 [start | stop | restart | reload | status]
+centos 7.0后不使用，使用systemctl
+修改的状态在重启后就会恢复，
+telnet ip 端口	//查看某个服务是否可以访问
+```
+
+## 查看有哪些服务
+
+```bash
+ll /etc/init.d
+或
+setup
+```
+
+## 服务与系统运行级别
+
+不同的服务可以在不同的级别分别设置是否进行自启动
+
+```bash
+chkconfig --list	//查询所有服务在不同级别的自启动情况
+chkconfig xxx --list	//查看某个服务在不同级别的自启动情况
+chkconfig --level 5 服务名 on/off	//在特定级别下关闭某个服务，如果不写level则在所有级别关闭该服务
+```
+
+## 动态监控进程
+
+```bash
+top []		//动态的监控进程，类似于任务管理器 
+	-d 10	//10秒刷新一次，默认3秒
+	
+load average: 0.11, 0.08, 0.05	//负载均衡，三个加一起 > 0.7说明系统负载过大
+Tasks: 221 total,   1 running, 220 sleeping,   0 stopped,   0 zombie
+221个任务总共，1个运行，220个休眠，0个停止，0个僵尸进程
+
+输入一个u，可以选择用户进行操作
+输入一个k,输入id号。可以杀死指定的进程
+输入一个P,会按照CPU使用排序
+输入一个M，会按内存消耗排序
+输入一个N，会按PID正序排序
+输入一个q，退出
+```
+
+## 监控网络
+
+```bash
+netstat -anp
+```
+
+# RPM和YUM
+
+```bash
+rpm -qa|grep xxx	//查询已经安装的软件
+obexd-0.19-2.el6.x86_64
+软件名|版本号|试用系统，el,centos 6.x版本的64位
+rpm -qi xxx		//查看某个软件的详细信息
+rpm -e xxx		//卸载某个安装的软件，如果其他软件依赖于该软件会报错
+rpm -e -nodeps	xxx	//强制删除该软件
+rpm -ivh xxx	//安装某个软件
+```
+
+## RPM软件的安装
+
+需要到挂在上我们安装的centos的ios文件，然后到/media/下去找rpm
+
+```bash
+cd /media/Centos/package	//里面就是各种安装包
+cp	xxx /opt
+rpm -ivh xxx		//就可以安装软件
+```
+
+## YUM
+
+```bash
+yum list | grep xxx	//查询yum库软件
+yum install xxx		//安装某个软件
+```
+
+## 简单实例
+
+## jdk
+
+```bash
+解压jdk，配置环境变量 vim /etc/profile
+JAVA_HOME=/opt/jdk1.7.0_79
+PATH=/opt/jdk1.7.0_79/bin：$PATH
+export JAVA_HOME PATH
+source /etc/profile
+```
+
+## tomcat
+
+```bash
+解压到opt
+./startup.sh	//防火墙导致外部无法访问
+vim /etc/sysconfig/iptables
+yy p	添加一个8080端口
+service iptables restart //外部就可以访问tomcat
+```
+
+## Eclipse
+
+```bash
+解压，运行即可
+打开	172.18.40.85:8080/demo/hello.jsp
+```
+
+## Mysql
+
+```bash
+rpm -qa | grep mysql
+rpm -e --nodeps mysql_libs
+yum -y install make gcc-c++ cmake bison-devel  ncurses-devel	//安装环境
+
+//编译安装
+cmake -DCMAKE_INSTALL_PREFIX=/usr/local/mysql -DMYSQL_DATADIR=/usr/local/mysql/data -DSYSCONFDIR=/etc -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_MEMORY_STORAGE_ENGINE=1 -DWITH_READLINE=1 -DMYSQL_UNIX_ADDR=/var/lib/mysql/mysql.sock -DMYSQL_TCP_PORT=3306 -DENABLED_LOCAL_INFILE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DEXTRA_CHARSETS=all -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci
+
+make && make install
+
+groupadd mysql		//添加mysql组和用户
+ 
+修改/usr/local/mysql权限
+chown -R mysql:mysql /usr/local/mysql
+
+//初始化mysql配置
+cd /usr/local/mysql
+scripts/mysql_install_db --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data --user=mysql    
+//启动读取配置文件先默认找/etc下的配置文件，改个名
+mv my.cnf my.bak
+
+//启动服务
+cd /usr/local/mysql
+cp support-files/mysql.server /etc/init.d/mysql
+chkconfig mysql on	//各级别自启动
+service mysql start  
+
+//登录Mysql
+cd /usr/local/mysql/bin
+./mysql -uroot  
+mysql> SET PASSWORD = PASSWORD('root');
+```
+
+# SHELL
+
+```bash
+vim myShell.sh
+#!/bin/bash
+echo "hello world"
+chmod 755 myShell.sh 
+./myShell.sh 
+
+//如果没有执行权限
+sh ./myShell.sh
+```
+
+## 变量
+
+```bash
+系统变量
+echo "PATH=$PATH，USER=$USER"
+查看所有的变量使用set
+
+自定义变量，两边不能有空格，尽量用大写
+A=100;
+echo "a=$a";
+unset a;	//销毁一个变量
+readonly a=99;	//静态变量，不可以修改和销毁
+RESULT = `ls -l /home`	对于命令返回值用``反引号
+DATE = $(date)	//同上面的功能，推荐。看起来直观
+
+全局环境变量，可以供其他shell使用
 ```
 

@@ -8,10 +8,7 @@
 
 ```java
 先到ws中配置node，选择文件位置，然后将	Coding assistance for Node.js打开，开启语法提示
-
 node helloWorld.js
-
-
 ```
 
 ## 官网
