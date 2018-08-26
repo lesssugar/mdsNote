@@ -10,10 +10,6 @@
 6. 准生产环境的运行时应用监控 
 7. 与云计算的天然集成 
 8. 是一个简化spring开发的一个框架，整合spring的技术栈 
-## 微服务概念发布人
-
-微服务	martin flower 
-
 ## 微服务的特点
 
 一个应用应该是一组小型服务，可以通过http的方式进行沟通，
@@ -44,33 +40,6 @@
 @SpringBootApplication 
 
 主函数内	SpringApplication.run(HelloWorld.class,args);进行服务的启动 
-## 将项目打成jar包或war包
-
-```java
-<build>
-    <plugins>
-        <plugin>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-</build>
-```
-
-将应用打包成一个可执行的jar包
-
-动maven选项卡中通过boot的生命周期package可以将项目打成jar包，在对应路径中，java -jar jar包名字，即可启动jar，jar包解压BOOT-INFO中classes是自己写的类，lib中包含运行的jar包库及tomcat的运行环境 
-
-meta-info中管理的是pom文件 
-
-##打成war包
-
-![1527933029420](C:\Users\ADMINI~1\AppData\Local\Temp\1527933029420.png)
-
-调整pom文件此处即可
-
-##启动jar包
-java -jar jar包名称
 # SpringBoot的原理 
 
 ```java
@@ -108,7 +77,7 @@ https://docs.spring.io/spring-boot/docs/1.5.14.BUILD-SNAPSHOT/reference/htmlsing
 )
 public @interface SpringBootApplication {
 ```
-##@AutoConfigurationPackage
+## AutoConfigurationPackage
 
 @AutoConfigurationPackage	下有导入注解
 
@@ -121,19 +90,20 @@ AnnotationMetadata参数获取的是主入口的元注解@SpringBootApplication
 new AutoConfigurationPackages.PackageImport(metadata)).getPackageName()
 
 计算为主入口的所在包，也就是说将主入口包下的全部注册为组件，一个组件如果不在该包之下则无法进行注册
-##@SpringBootConfiguration
+
+## @SpringBootConfiguration
 
 表明一个类是一个配置类
 
 @Import({AutoConfigurationImportSelector.class})
-###@EnableAutoConfiguration
+
+### @EnableAutoConfiguration
 
 public @interface EnableAutoConfiguration {
 
-###@Import({AutoConfigurationImportSelector.class})
-selectImports方法，会给容器中导入非常多的自动配置类	xxxAutoConfiguration，给容器这个场景需要的所有组件，并配置好这些组件
+### @Import({AutoConfigurationImportSelector.class})
 
-![img](D:/%E6%9C%89%E9%81%93%E7%AC%94%E8%AE%B0/qq6A8D41E5978DE6EA5AB3219203EC493B/44d74c962ef446479a3c4835e0e71b44/clipboard.png) 
+selectImports方法，会给容器中导入非常多的自动配置类	xxxAutoConfiguration，给容器这个场景需要的所有组件，并配置好这些组件
 
 有了这些自动配置类，免去了我们手动编写配置注入功能组件的工作
 
@@ -149,18 +119,10 @@ Enumeration<URL> urls = classLoader != null ? classLoader.getResources("META-INF
 
 对资源文件进行获取
 
-![img](D:/%E6%9C%89%E9%81%93%E7%AC%94%E8%AE%B0/qq6A8D41E5978DE6EA5AB3219203EC493B/4737e66ecb0845aaada17703e919fb5d/clipboard.png)
-
-![img](D:/%E6%9C%89%E9%81%93%E7%AC%94%E8%AE%B0/qq6A8D41E5978DE6EA5AB3219203EC493B/75141931fb1b4002a301509fe6d41ba8/clipboard.png)
-
-spring-boot-autoconfigure-2.0.2.RELEASE.jar	进行了这些工作
-
-![img](D:/%E6%9C%89%E9%81%93%E7%AC%94%E8%AE%B0/qq6A8D41E5978DE6EA5AB3219203EC493B/b657403c144647f1ab7f362a53e8a656/clipboard.png)
-
 包含全部的配置项，如果有需要更改的可以到这里进行更改
 
+# 配置文件
 
-#配置文件
 ## @ConfigurationProperties(prefix = "person") 
 
 导入文件配置处理器
@@ -281,10 +243,6 @@ spring:
 
 ## 启动jar包的时候配置环境
 
-![1527948306330](C:\Users\ADMINI~1\AppData\Local\Temp\1527948306330.png)
-
-![1527948335818](C:\Users\ADMINI~1\AppData\Local\Temp\1527948335818.png)
-
 或者在运行jar包的时候添加 --spring.profiles.active=dev
 
 ## 优先级
@@ -293,10 +251,12 @@ spring:
 
 # 配置文件可以放的地方
 
-- file:./config/  直接写在项目路径下
-	 file:./	直接写在项目路径下
-	 classpath:/config		resoureces/config/application.properties
-	 classpath:/	application.properties
+```java
+file:./config/  直接写在项目路径下
+file:./	直接写在项目路径下
+classpath:/config		resoureces/config/application.properties
+classpath:/	application.properties
+```
 
 上面的顺序优先级由高到低，高优先级的会覆盖低优先级的配置，可以形成配置互补
 
@@ -310,7 +270,7 @@ spring.config.location=D:application.properties
 
 # 配置项
 
-##搜索Appendices application文件配置
+## 搜索Appendices application文件配置
 
 ```
 #配置项目的访问端口
@@ -322,24 +282,20 @@ server.servlet.context-path=/demo 	//登录的时候	http://localhost:9999/demo/
 ```
 
 # 外部配置文件的顺序
+```java
 1.命令行参数	java -jar initboot-0.0.1-SNAPSHOT.jar --server.port=10000
 2.来自java:com/env的JNDI属性	
 3.java系统属性
 4.操作系统环境变量
 5.RandomValueProperty配置的random.* 属性值
 6.打出来的jar包外applicatio-(profile)带环境的文件
-
-![1528038094012](C:\Users\ADMINI~1\AppData\Local\Temp\1528038094012.png)
-
-
-
 7.打出来jar包内applicatio-(profile)带环境的文件、
 8.打出来jar包外applicatio不带环境的文件
 9.打出来jar包内applicatio不带环境的文件
 10.@Configuration类注解上的@PropertySource
 11.通过SpringApplication.setDefaultProperties指定的默认属性
-
-1.6.78较常用
+6.78较常用
+```
 
 # 自动配置原理
 
@@ -359,7 +315,8 @@ Enumeration<URL> urls = classLoader != null ? classLoader.getResources("META-INF
 从properties中获取EnableConfiguration.class（类名）对应的值，然后把它们添加到容器中
 ```
 
-##HttpEncodingAutoConfiguration类举例
+## HttpEncodingAutoConfiguration类举例
+
 ```
 @Configuration	//表示这是一个配置类
 @EnableConfigurationProperties(HttpEncodingProperties.class)//启用某各类中的配置
@@ -426,17 +383,11 @@ Positive matches:
 
 # 日志
 
-市面上的日志框架
+| 抽象层            | 实现层                    |
+| ----------------- | ------------------------- |
+| JCL,slf4j,logging | logback,log4j,log4j2，JUL |
 
-JUL,JCL,Jboss-logging,logback,log4j,log4j2,slf4j
-
-JCL,slf4j,logging属于抽象层
-
-logback,log4j,log4j2，JUL属性实现层
-
-左边选择一个抽象层，右边一个实现层
-
-slf4j，logback
+推荐使用slf4j，logback
 
 ## SLF4J使用
 
@@ -477,15 +428,14 @@ spring默认使用的是info级别的
 logging.level.com.wyq.initboot=trace
 #日志输出地址
 logging.path=log	//log指的是项目下的文件夹，日志文件默认名字叫spring.log
+logging.pattern.console=
 ```
 
  SpringBoot默认帮我们配置好了日志；在
 
-![1528101838782](C:\Users\ADMINI~1\AppData\Local\Temp\1528101838782.png)
-
 下的logging下的defaults可以进行查看
 
-##指定配置
+## 指定配置
 
 给类路径下放上每个日志框架自己的配置文件即可；SpringBoot就不使用他默认配置的了
 
@@ -504,7 +454,6 @@ logback.xml：直接就被日志框架识别了；
     <!-- configuration to be enabled when the "staging" profile is active -->
   	可以指定某段配置只在某个环境下生效
 </springProfile>
-
 ```
 
 如：
@@ -521,7 +470,7 @@ logback.xml：直接就被日志框架识别了；
 			%n是换行符
         -->
         <layout class="ch.qos.logback.classic.PatternLayout">
-            <springProfile name="dev">
+            <springProfile name="dev">	//在这里进行分别不同的级别
                 <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} ----> [%thread] ---> %-5level %logger{50} - %msg%n</pattern>
             </springProfile>
             <springProfile name="!dev">
@@ -536,7 +485,8 @@ logback.xml：直接就被日志框架识别了；
 切换为log4j2
 
 ```xml
-   <dependency>
+//排除掉原来的  spring-boot-starter-logging
+<dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <exclusions>
