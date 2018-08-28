@@ -365,6 +365,8 @@ public class ShiroHandler {
         }
         return "success";
     }
+    //退出登录
+    subject.logout();
 }
 ```
 
