@@ -371,11 +371,25 @@ public class ShiroHandler {
 ## Realm
 
 ```java
+//login方法的比对会到该出进行比对，不用配置文件
 public class ShiroRealm extends AuthenticatingRealm {
 
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-        System.out.println(authenticationToken);
-        return null;
+        //将AuthenticationToken强制转换为UsernamePasswordToken
+        UsernamePasswordToken token = (UsernamePasswordToken) authenticationToken;
+        String username = token.getUsername();
+        //从数据库中获取userName和userName所对应的信息
+        if("unknow".equals(username)){
+            throw new UnknownAccountException("用户不存在");
+        }
+        //根据用户情况创建
+        Object principal = username;
+        //密码
+        Object credentials = "123456";
+        //realm的name
+        String realmName = getName();
+        SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(principal,credentials,realmName);
+        return info;
     }
 }
 ```
