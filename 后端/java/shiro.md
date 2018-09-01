@@ -1,43 +1,4 @@
-约束
-
-```
-<dependency>
-  <groupId>log4j</groupId>
-  <artifactId>log4j</artifactId>
-  <version>1.2.17</version>
-</dependency>
-<dependency>
-  <groupId>org.slf4j</groupId>
-  <artifactId>slf4j-api</artifactId>
-  <version>1.7.25</version>
-</dependency>
-<dependency>
-  <groupId>org.slf4j</groupId>
-  <artifactId>slf4j-log4j12</artifactId>
-  <version>1.7.25</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>org.apache.shiro</groupId>
-  <artifactId>shiro-all</artifactId>
-  <version>1.3.2</version>
-</dependency>
-```
-
-# 导入ini配置文件
-
-```ini
-//获取当前subject
-Subject currentUser = SecurityUtils.getSubject();
-
-//获取session
-Session session = currentUser.getSession();
-session.setAttribute("someKey", "aValue");
-String value = (String) session.getAttribute("someKey");
-if (value.equals("aValue")) {
-    log.info("---> Retrieved the correct value! [" + value + "]");
-}                                                                         
-```
+# 基本使用                                                                
 
 ```java
 public class Quickstart {
@@ -58,29 +19,24 @@ public class Quickstart {
             UsernamePasswordToken token = new UsernamePasswordToken("lonestarr", "vespa");
             token.setRememberMe(true);
             try {
-                //用户的路
+                //用户登录
                 currentUser.login(token);
             }
             catch (UnknownAccountException uae) {
                 //未知的账户异常
-                log.info("----> There is no user with username of " + token.getPrincipal());
                 return; 
             }
             catch (IncorrectCredentialsException ice) {
                 //用户存在,但密码不对的异常
-                log.info("----> Password for account " + token.getPrincipal() + " was incorrect!");
                 return; 
             }
             catch (LockedAccountException lae) {
                 //账户被锁定异常
-                log.info("The account for username " + token.getPrincipal() + " is locked.  " +
-                        "Please contact your administrator to unlock it.");
             }
             catch (AuthenticationException ae) {
                 //上面所有异常的父类
             }
         }
-        log.info("----> User [" + currentUser.getPrincipal() + "] logged in successfully.");
 
         //检查用户是否拥有角色
         if (currentUser.hasRole("schwartz")) {
@@ -111,6 +67,213 @@ public class Quickstart {
 }
 ```
 
+## 自定义Realm
+
+```java
+public class MyRealm1 implements Realm {
+    public String getName() {
+        return "myRealm1";
+    }
+	//判断该realm是否支持该次比对
+    public boolean supports(AuthenticationToken authenticationToken) {
+        return authenticationToken instanceof UsernamePasswordToken;
+    }
+	//进行登录测试
+    public AuthenticationInfo getAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
+        String userName = (String) authenticationToken.getPrincipal();
+        String passWord = new String((char[]) authenticationToken.getCredentials());
+        if (!"zhang".equals(userName)) {
+            throw new UnknownAccountException("该用户不存在");
+        }
+        if (!"123".equals(passWord)) {
+            throw new IncorrectCredentialsException("密码错误");
+        }
+        return new SimpleAuthenticationInfo(userName,passWord,getName());
+    }
+}
+```
+## 自定义realm的整合
+
+```ini
+myRealm1=com.crud.filter.shiro.realms.MyRealm1
+myRealm2=com.crud.filter.shiro.realms.MyRealm2
+securityManager.realms=$myRealm1，$myRealm2
+//SecurityManager会按照制定的顺序进行检查，如果没写realms会按注册顺序，写了一个其他的会被忽略
+```
+
+# Realm
+
+![realm](https://7n.w3cschool.cn/attachments/image/wk/shiro/5.png)
+
+一般继承**AuthorizingRealm**（身份验证）进行使用，继承自**CachingRealm**，所以自带缓存
+
+- IniRealm,PropertiesRealm，通过配置文件的方式
+- JdbcReamlm通过sql查询对应的信息
+
+## JdbcRealm
+
+```xml
+<dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>5.1.25</version>
+</dependency>
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>0.2.23</version>
+</dependency>
+```
+
+```ini
+//shiro.ini的数据源整合
+jdbcRealm=org.apache.shiro.realm.jdbc.JdbcRealm
+dataSource=com.alibaba.druid.pool.DruidDataSource
+dataSource.driverClassName=com.mysql.jdbc.Driver
+dataSource.url=jdbc:mysql://localhost:3306/shiro
+dataSource.username=root
+dataSource.password=root
+jdbcRealm.dataSource=$dataSource
+securityManager.realms=$jdbcRealm
+//shiro会用自己默认的sql语句到数据库中进行比对，可以使用shiro.sql类似创建数据库表
+
+//指定检验方式的默认实现
+[main]
+#指定securityManager的authenticator实现
+authenticator=org.apache.shiro.authc.pam.ModularRealmAuthenticator
+securityManager.authenticator=$authenticator
+#指定securityManager.authenticator的authenticationStrategy
+allSuccessfulStrategy=org.apache.shiro.authc.pam.AllSuccessfulStrategy
+securityManager.authenticator.authenticationStrategy=$allSuccessfulStrategy
+```
+
+#Authenticator  
+
+```java
+//测试的核心，包含ModularRealmAuthenticator实现类，包含三种不同的验证规则，默认使用2
+FirstSuccessfulStrategy		//只要有一个验证成功即返回信息，其他的忽略
+AtLeastOneSuccessfulStrategy//返回所有成功认证的信息
+AllSuccessfulStrategy		//所有Realm认证成功才算成功，有一个失败就失败
+//也可以继承AbstractAuthenticationStrategy来自己定义策略
+```
+
+# 授权
+
+- 主体 subject，即访问的用户
+- 资源 用户需要获得授权才可以对资源进行访问或者修改
+- 权限  原子授权单位，可以给用户分配操作某个资源的权利
+
+```java
+//确定权限三种方式
+if(subject.hasRole(“admin”)) {
+    //有权限
+} else {
+    //无权限
+}
+@RequiresRoles("admin")
+public void hello() {
+    //有权限
+};
+<shiro:hasRole name="admin">
+<!— 有权限 —>
+</shiro:hasRole>
+```
+
+```ini
+[users]		//密码，角色1，角色2
+zhang=123,role1,role2
+wang=123,role1&nbsp;
+```
+
+```java
+//通过角色粗粒度管理权限，如果代码更改，角色权限更改，需要在代码中多处进行更改
+@Test
+public void testHasRole() {
+    login("classpath:shiro-role.ini", "zhang", "123");
+    //判断拥有角色：role1
+    Assert.assertTrue(subject().hasRole("role1"));
+    //判断拥有角色：role1 and role2 and !role3
+    boolean[] result = subject().hasRoles(Arrays.asList("role1", "role2", "role3"));
+    Assert.assertEquals(true, result[0]);
+    Assert.assertEquals(true, result[1]);
+    Assert.assertEquals(false, result[2]);
+};
+
+@Test	//check的方法如果没有通过会抛出异常
+public void testCheckRole() {
+    login("classpath:shiro-role.ini", "zhang", "123");
+    //断言拥有角色：role1
+    subject().checkRole("role1");
+    //断言拥有角色：role1 and role3 失败抛出异常
+    subject().checkRoles("role1", "role3");
+};
+```
+
+```java
+//基于资源的访问控制（显示角色）
+[users]
+zhang=123,role1,role2
+wang=123,role1
+[roles]
+role1=user:create,user:update
+role2=user:create,user:delete
+
+role3="system:user:create,update,delete,view"//对资源的多个权限
+subject().checkPermissions("system:user:create,delete,update,view");
+role4=system:user:*	//对user的全部权限
+subject().checkPermissions("system:user:*");
+role5=*:view
+subject().checkPermissions("user:view")
+role6=*:*:view
+
+role72="user:update,delete:1"	//对user的1实例拥有update,delete权限
+```
+
+```java
+@Test
+public void testIsPermitted() {
+    login("classpath:shiro-permission.ini", "zhang", "123");
+    //判断拥有权限：user:create
+    Assert.assertTrue(subject().isPermitted("user:create"));
+    //判断拥有权限：user:update and user:delete
+    Assert.assertTrue(subject().isPermittedAll("user:update", "user:delete"));
+    //判断没有权限：user:view
+    Assert.assertFalse(subject().isPermitted("user:view"));
+};
+
+@Test
+public void testIsPermitted() {
+    login("classpath:shiro-permission.ini", "zhang", "123");
+    //判断拥有权限：user:create
+    Assert.assertTrue(subject().isPermitted("user:create"));
+    //判断拥有权限：user:update and user:delete
+    Assert.assertTrue(subject().isPermittedAll("user:update", "user:delete"));
+    //判断没有权限：user:view
+    Assert.assertFalse(subject().isPermitted("user:view"));
+};
+```
+
+# Remeber me
+
+关闭浏览器后下次打开还可以记住你是谁，下次无需登录即可访问
+
+```xml
+<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+    <constructor-arg value="sid"/>
+    <property name="httpOnly" value="true"/>
+    <property name="maxAge" value="-1"/>
+</bean>
+<bean id="rememberMeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+    <constructor-arg value="rememberMe"/>
+    <property name="httpOnly" value="true"/>
+    <property name="maxAge" value="2592000"/><!-- 30天 -->
+</bean>
+
+http://172.18.40.147:9090/gjzs2.0/pages/calculator.html?type=xejkhtjf
+```
+
+
+
 # 整合spring
 
 ```xml
@@ -128,7 +291,6 @@ public class Quickstart {
 		<filter-name>shiroFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-
 ```
 
 ## application.xml
@@ -365,6 +527,8 @@ public class ShiroHandler {
         }
         return "success";
     }
+    //退出登录
+    subject.logout();
 }
 ```
 
