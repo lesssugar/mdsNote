@@ -1,182 +1,41 @@
-vue精简版
+# 基础使用
 
-var app = new Vue({})
-
-vue的声明周期,共有create,mount,update,destory
-
+```javascript
+v-model.number 会将输入的值转化为数值型 vue的声明周期,共有create,mount,update,destory
 对应的方法包括 beforeCreate(),created(),beforeMount(),mounted(),beforeUpdate(),updated()
-
 beforeDestory(),destoryed()方法 mount对应的是元素的挂载过程
-
-对象.$watch('num',function(){})
-
-v-model 写在input上，可以将输入框中的值绑定修改一个值 v-model="name"
-
-v-model.lazy 只有在Input框失去焦点时，才更新数据  v-model.trim 
-
-v-model.number 会将输入的值转化为数值型 
-
+v-model.lazy 只有在Input框失去焦点时，才更新数据  v-model.trim
+v-model.number 会将输入的值转化为数值型
 只能在 input textarea 及select元素上使用 select值为0.1.2
-
-v-if v-else-if v-else 
-
-template标签包含多个元素一起进行v-if，不支持v-show
-
-<li v-for="food in foods">{{food.name}}￥{{food.price * food.discount}}</li> 可以运算
-
-foods: [{name: "葱",price: 10}, {name: "姜",price: 5}, {name: "蒜",price: 5}]
-
-app.foodList.push({name: "椒",price: 8}) 可以插入元素
-
-如果想对属性进行{{}} 则需要对属性添加 v-bind：对属性进行绑定
-
-v-on: 绑定的是元素的事件
-
-v-on = "{mouseenter : menter(),mouseleave : mleave()}"
-
-v-on:submit.prevent
-
-v-on:submit.stop 停止冒泡事件
-
-v-on:keyup = "onKeyUp"
-
-v-on:keyup.enter = "onKeyUp" 如果用户敲了回车键
-
-@ 可以 代替v-on指令
-
-v-on:click = "{{name = 1}}"
-
-<form v-on:submit.prevent="onSubmit">...</form>
-
-.prevent 修饰符调用 event.preventDefault()
-
-{{ message.split('').reverse().join('') }}
-
-methods : { show : function(){return this.name}}
-
-computed : { show : function(){return this.name}}
-
-computed所定义的方法不用写()
-
-侦听属性 watch：{ }当监听的属性值发生变化时，执行回调函数
-
-计算属性将计算式封装成 computed中的方法 
-
-sum : function(){ }  avg = Math.round(this.sum / 3) 计算属性中的数据有缓存，methods 中的方法每次都会重新调用
-
-[侦听器](https://cn.vuejs.org/v2/guide/computed.html#侦听器) ？
-
-class绑定
-
 class v-bind:class= {active:isActive,'textdanger':isDanger}
-
-class v-bind:class = [active,sss]
-
-class v-bind:class = "classObject"
-
 可以直接定义数组 data:{ active : true ,'text-danger' : false}
-
 方法 return {active:this.isActive && !this.hasError}
+M层数据层，V视图层，VM视图模型层，根据数据的变化改变视图
+vue会尽量服用页面上的元素，但是只不会清空，所以添加一个key="username",v-for为了性能应该添加不用index为标识的:key,频繁操作数组index会浪费性能，应该用唯一标识符
+template,我们需要用div包裹一组元素，不希望该div渲染，使用template进行包裹即可
+this.$set("address","beijing");	//响应式的添加属性
+Vue.$set(vm.infoList,1,5)	//修改数组的第1项为5
+```
 
-！null为true
+# 计算属性的getter和setter
 
-template: '<p class="foo bar">Hi</p>'
+```js
+//将一个计算属性分为两个部分
+computed:{
+    fullName:{
+        get:function () {
 
-<my-component class="baz boo"></my-component>
+        },
+            set:function (val) {
 
-<p class="foo bar baz boo">Hi</p>
-
-class绑定同样效果
-
-<my-component v-bind:class="{ active: isActive }"></my-component>
-
-内联样式
-
-v-bind:style 在行内进行样式的绑定,会自动添加 -o, -webkit等属性
-
-{color:showColor,fontSize: fontSize + 'px'}fontSize形式
-
-或者直接引入一个对象的样式
-
-styleArr : { color : 'red' ，fontSize : '50px'}
-
-[styleArr,styleArr2] 以数组的方式绑定css样式
-
-display: ['-webkit-box', '-ms-flexbox', 'flex']
-
-会渲染最后一个被浏览器支持的值，本例中，如果浏览器不支持带前缀的属性，那么本例中的属性为  display : flex;
-
-两个互相切换的模板使用相同的元素时，相同的元素不会被进行替换，节省开销，如果希望重新渲染为元素添加key="" 唯一值
-
-v-show开销低v-if切换开销高
-
-v-for和v-if一起使用，v-for具有更高的优先级
-
-v-for="p in ps" {{p.id}}	in也可以用of
-
-v-for="（p，index) in ps" {{p.id}}{{index}} 序号
-
-(value，key，index) of pet  {{index}}:{{key}}:{{value}}
-
-1个参数遍历值，两个参数遍历key,value，三个带下标
-
-遍历的时候最好给一个唯一标识的 :key=""
-
-Vue.component('my-component-name', { })
-
-组件的注册，组件名使用 -进行名字的连接
-
-注册好的组件可以使用在vue的根实例当中
-
-局部注册
-
-组件中的data标签写的是一个方法，返回的值具有和vue对象中data中的值一样的功能，可以在template中使用，多个组件具有相同的变量，在同一vue作用域下，值就会相互影响
-
-vue对象需要在组件之后进行申请，一个vue对象进行注册的时候会对它的子元素进行检查是否为正常的标签或者组件，如果某个子元素为不存在的标签则会报错，所以需要先进行组件的注册在进行vue对象的注册
-
-每使用一次组件，对应一个新的组件实例
-
-data对应的是一个可以返回值得方法，而不是属性对，放置组件实例间的数据共享
-
-组件通过 props: ['a'],获取外部元素 :a类似的值，组件内部{{}}
-
-实现外部对组件的传参
-
-局部组件的注册components:{ com : { template : '',methods {}}}
-
-可以将组件的模板写在h5里然后通过选择器引用
-
-数组操作的方法 push() pop() shift() reverse() sort() splice()
-
-splice(index,i) 从i数组index的位置开始，删除一个元素，所以可以用来删除指定的元素
-
-event.target.tagName获取触发事件的元素对象
-
-数组中的值是一个对象，当vue中的元素指向数组中的元素时，如果数组中的值改变了引用地址，由于网页中渲染的元素还指向原来的元素地址，所以无法进行动态绑定，如果相对值进行更新
-
-Vue.set(this.nums,2,80)
-
-可以通过计算属性对数组的值进行监督
-
-多选框，单选按钮和select绑定到数组
-
-​      { text: 'One', value: 'A' },
-
-​      { text: 'Two', value: 'B' },
-
-​      { text: 'Three', value: 'C' }
-
-如果输入的是One 想要传递
-
-让radio等默认选中，将值给成和和他value一样的值即可
-
-表单v-model .lazy  .number .trim
+            }
+    }
+}
+```
 
 # 模块化
 
 ## 注册全局组件
-
-
 
 ## 注册局部组件
 
@@ -203,6 +62,11 @@ Vue.set(this.nums,2,80)
 ## 注册全局组件
 
 		Vue.component('TodoItem',{
+			data(){
+	           return {
+	               
+	           } 
+			},
 			props : ['item','index'],
 			template : '<li @click="handleTodoItem">{{item}}</li>',
 			methods : {
@@ -222,5 +86,137 @@ this.$emit('delete',this.index)	//向父组件发送事件和参数
 :item="item" :index="index"	//父组件向子组件发送数据
 props : ['item','index']	//子组件接收父组件传递的数据
 
+props:{
+	msg:String,
+	age:[Number,String]		//对传过来的数据进行校验
+    email:{
+    	type:String,
+    	required:false,
+    	default:"Default Vlue",
+        validator:function(value){
+        	return false;
+        }//以对象的形式进行数据的检验,校验器，类型，默认值
+    }
+}
 
 ````
+
+# 给组件绑定原生事件
+
+```html
+如果就想给模板上绑事件，使用	@click.native=""	//进行绑定
+```
+
+# 获取dom元素
+
+vue中对于复杂的dom操作可能力不重新，为了减少dom的获取操作
+
+```html
+<div ref="hello" id="app"></div>
+let divDom = this.$refs.hello		//获取的就是div的dom节点
+技巧:通过ref获取一个模板的节点，可以直接获取该模板实例，更改他的属性或调取方法
+```
+
+# 插槽
+
+```html
+<slot></slot>	//插槽子组件中写这个，用父组件写的东西进行填充
+
+<div slot="header">	//插槽中的内容
+</div>
+
+<slot name="header"></slot>	//引用header部分的内容作为插槽中的内容
+```
+
+# 动态组件
+
+```html
+<component :is="type"></component>	//会根据type的值加载对应名称的组件
+```
+
+# vue的动画效果
+
+```css
+出现效果,3秒出现
+.v-enter{		//动画开始第一帧加载两个样式，第二帧移除-enter，opacity发生了变化，所以下面监
+    opacity : 0;	//发生效果，3秒内完成opacity
+}
+.v-enter-active{
+    transition: opacity 3s;
+}
+
+消失效果,3秒出现
+.v-leave-to{
+    opacity ： 0；
+}
+.v-leave-active{
+    transition: opacity 3s;
+}
+
+    <transition name="">
+        <div v-if="show" @click="handleDom"></div>
+    </transition>
+//如果name有值，植入dom则样式名，dom-enter,写v-if,或v-show，都可以
+            
+@keyframe bounce-in{
+    0%{
+        transform:scale(1);
+    }              
+    50%{
+        transform:scale(1.5);
+    }
+    100%{
+        transform:scale(2;
+    }
+}
+.v-enter-active{
+    transform-origin: left center;	//防止动画效果出现问题
+    animation: bounce-in 1s;
+}
+.v-leave-active{
+    transform-origin: left center;
+    animation: bounce-in 1s reserse;
+}
+
+    <transition name=""
+		enter-active-class=""
+		leave-active-class=""
+	>
+        <div v-if="show" @click="handleDom"></div>
+    </transition>
+    //这样就可以使用我们预先准备好的样式，例如搭配animate.css
+```
+
+# 使用animate.css
+
+```html
+http://www.jq22.com/yanshi819	//添加样式名格式 class="animate flash" 就会添加对应的效果
+
+这样添加出来的效果在页面第一次加载的时候没效果,需要按如下的写法，定义一个appear-class即可
+<transition
+            type="transition"		//:duration="10000"
+            appear
+            enter-active-class=""
+            leave-active-class=""
+            appear-active-class=""
+            >
+    <div v-if="show">
+        aaaa
+    </div>
+</transition>
+// 我们自己写的过度动画时长可能和animate.css中定义的时长不一样,type以哪个为准，这里以我们自己定义的为准，或者将type替换为:duration="10000",来规定动画的总时长，对应的class被清除掉
+：duration={"enter":5000,"leave":5000}
+```
+
+# 动画的钩子函数
+
+```html
+@before-enter	//在动画效果运行之前，有一个el的函数参数
+@enter			//在上面函数运行完毕后，运行动画效果,el,done，元素和回调函数函数参数，我们在写完自己的方法后，主动调用一下done()；方法
+@after-enter	//
+
+@before-leave
+@leave
+@after-leave
+```
+

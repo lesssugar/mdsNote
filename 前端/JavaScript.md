@@ -17,3 +17,9 @@ DOMContentLoaded事件只要页面DOM元素加载完毕后就会触发，onLoad(
 4、只要“&&”前面是true，无论“&&”后面是true还是false，结果都将返“&&”后面的值;
 ```
 
+# 数据类型
+
+```js
+
+```
+

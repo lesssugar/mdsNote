@@ -136,6 +136,7 @@ dataSource.password=root
 jdbcRealm.dataSource=$dataSource
 securityManager.realms=$jdbcRealm
 //shiro会用自己默认的sql语句到数据库中进行比对，可以使用shiro.sql类似创建数据库表
+users表id,username,password
 
 //指定检验方式的默认实现
 [main]
@@ -147,7 +148,7 @@ allSuccessfulStrategy=org.apache.shiro.authc.pam.AllSuccessfulStrategy
 securityManager.authenticator.authenticationStrategy=$allSuccessfulStrategy
 ```
 
-#Authenticator  
+# Authenticator  
 
 ```java
 //测试的核心，包含ModularRealmAuthenticator实现类，包含三种不同的验证规则，默认使用2
