@@ -220,3 +220,71 @@ http://www.jq22.com/yanshi819	//添加样式名格式 class="animate flash" 就�
 @after-leave
 ```
 
+# vue-cli
+
+````js
+npm install --global vue-cli
+vue init webpack Travel	//初始化项目
+npm install 		 	//
+cd Travel
+npm run dev
+````
+
+## 搭建的项目分析
+
+## 文件结构
+
+## 路由
+
+```js
+src/main.js	整个项目的入口文件
+import Vue from 'vue'
+import App from './App'
+import router from './router'
+
+Vue.config.productionTip = false
+
+new Vue({
+  el: '#app',
+  router,
+  components: { App },
+  template: '<App/>'
+})
+//挂在到index.html文件的div元素上，引入了App组件显示在页面上，默认首页上的内容就是组件中的内容
+
+//App.vue
+<template>
+  <div id="app">
+    <img src="./assets/logo.png">
+    <router-view/>	//路由
+  </div>
+</template>
+```
+
+根据url不同展示给用户不同的页面
+
+```html
+<router-view/>		//当前路由对应的路径
+找到router文件夹下的index.js
+```
+
+```js
+//index.js
+import Vue from 'vue'
+import Router from 'vue-router'
+import HelloWorld from '@/components/HelloWorld'
+
+Vue.use(Router)
+
+export default new Router({
+  routes: [
+    {
+      path: '/',		//访问路径，则访问helloWorld
+      name: 'HelloWorld',
+      component: HelloWorld
+    }
+  ]
+})
+//HelloWorld中就包含了页面中剩余的内容，路由就是根据路径/用路由显示了对应的页面
+```
+
