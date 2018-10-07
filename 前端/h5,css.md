@@ -138,6 +138,14 @@ align-content: flex-start | flex-end | center | space-between | space-around | s
 flex-grow: 1; /* default 0 */1就是占据剩余的全部空间
 ```
 
+# 多字...代替
+
+```css
+overflow:hidden
+whitespace:nowrap
+text-overflow:ellipsis
+```
+
 # Canvas
 
 canvas建议成对出现，默认高宽300，150,默认颜色和body背景颜色一样
@@ -177,4 +185,3 @@ canvas建议成对出现，默认高宽300，150,默认颜色和body背景颜色
         //后画的会覆盖先覆盖的
         //lineJoin bevel，斜角 round，圆角 miter，默认直角
 ```
-

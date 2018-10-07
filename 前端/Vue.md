@@ -4,6 +4,7 @@
 v-model.number 会将输入的值转化为数值型 vue的声明周期,共有create,mount,update,destory
 对应的方法包括 beforeCreate(),created(),beforeMount(),mounted(),beforeUpdate(),updated()
 beforeDestory(),destoryed()方法 mount对应的是元素的挂载过程
+updated()	页面因为数据变化重新渲染触发该函数
 v-model.lazy 只有在Input框失去焦点时，才更新数据  v-model.trim
 v-model.number 会将输入的值转化为数值型
 只能在 input textarea 及select元素上使用 select值为0.1.2
@@ -177,6 +178,9 @@ let divDom = this.$refs.hello		//获取的就是div的dom节点
     transform-origin: left center;
     animation: bounce-in 1s reserse;
 }
+.v-enter-active,.v-leave-active{
+    transition: all 3s;		//这样的话什么动画效果都可以直接进行使用，而不用都写
+}	
 
     <transition name=""
 		enter-active-class=""
@@ -223,9 +227,9 @@ http://www.jq22.com/yanshi819	//添加样式名格式 class="animate flash" 就�
 # vue-cli
 
 ````js
-npm install --global vue-cli
+cnpm install --global vue-cli
 vue init webpack Travel	//初始化项目
-npm install 		 	//
+cnpm install 		 	//
 cd Travel
 npm run dev
 ````
@@ -286,5 +290,395 @@ export default new Router({
   ]
 })
 //HelloWorld中就包含了页面中剩余的内容，路由就是根据路径/用路由显示了对应的页面
+
+export default new VueRouter ({
+  // 注册应用中所有的路由
+    
+  routes: [
+    {
+      path: '/about',
+      component: About
+    },
+    {
+      path: '/home',
+      component: Home,
+      children: [	//如果想保留父页面更换子组件，需要这种，否则会跳转页面
+        {
+          path: '/home/news',
+          component: News
+        }
+      ]
+    },
+    {
+      path: '/',
+      redirect: '/about'
+    }
+  ]
+})
+```
+
+## 路由传递参数
+
+```html
+{
+path:'detail/:id',
+component: MessageDetail
+}
+//父组件
+<ul>
+    <li v-for="m in messages" :key="m.id">
+        <router-link :to="`/home/message/detail/${m.id}`">{{m.title}}</router-link>
+        <button @click="pushShow(m.id)">push查看</button>
+        <button @click="replaceShow(m.id)">replace查看</button>
+    </li>
+</ul>
+//子组件
+<ul>
+    <li>id: {{$route.params.id}}</li>
+    <li>title: {{detail.title}}</li>
+    <li>content: {{detail.content}}</li>
+</ul>
+```
+
+## 路由参数改变
+
+```js
+watch:{
+    $route:{	//对路由进行监视即可
+        handler:function(){
+            
+        }
+    }
+}
+```
+
+
+
+## 页面跳转
+
+```html
+vue项目中使用
+<router-link to="/list" class="home">点击进入列表页</router-link>	a标签功能+ 
+//js中用路由进行页面跳转
+this.$router.push('/')
+```
+
+# 定制自己的变量
+
+```bash
+webpack.base.conf.js	文件
+  resolve: {
+    extensions: ['.js', '.vue', '.json'],
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js',
+      '@': resolve('src'),
+    }
+  },
+ //可以模仿@添加一个路径变量，添加后需要重启项目
+```
+
+# 轮播插件 Vue-Awesome-Swiper
+
+```bash
+npm install vue-awesome-swiper --save
+
+main.js引入
+import Vue from 'vue'	//默认有无需引入
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+
+// require styles
+import 'swiper/dist/css/swiper.css'
+
+Vue.use(VueAwesomeSwiper, /* { default global options } */)	//无参数可以暂时后面的去掉
+```
+
+```html
+//v-if的作用在父组件给子组件传值使用，防止吟开始是空数组，获取数据后重新渲染，进入页面不是第一个
+<template>
+  <swiper :options="swiperOption" v-if="infoList.length">
+    <swiper-slide v-for="(slide, index) in swiperSlides" :key="index">I'm Slide {{ slide }}</swiper-slide>
+    <div class="swiper-pagination" slot="pagination"></div>
+  </swiper>
+</template>
+
+<script>
+export default {
+  name: 'carrousel',
+  data () {
+    return {
+      swiperOption: {
+        pagination: {
+          el: '.swiper-pagination'，
+          loop: true,		//可以进行循环
+          autoplay : false	//自动滚动
+        }
+      },
+      swiperSlides: [1, 2, 3, 4, 5]
+    }
+  },
+  mounted () {
+    setInterval(() => {
+      console.log('simulate async data')
+      if (this.swiperSlides.length < 10) {
+        this.swiperSlides.push(this.swiperSlides.length + 1)
+      }
+    }, 3000)
+  }
+}
+</script>
+<style scoped lang="stylus">
+  >>> .swiper-pagination-bullet-active
+    background: #fff;
+  .swiper-img
+    width :100%
+    height :100px
+</style>
+
+```
+
+# 本地缓存
+
+```js
+window.localStorage.setItem('key',value);window.localStorage.setItem('key',value);
+window.localStorage.getItem('key');
+```
+
+
+
+# 样式的穿透
+
+```html
+写了scoped的样式仅在该组件中有效，如果想让他对子组件残生效果
+  >>> .swiper-pagination-bullet-active
+    background: #fff;
+这样的话该样式在子组件中也会被修改
+```
+
+# vue-devtool
+
+```bash
+https://github.com/vuejs/vue-devtools	//下载zip包
+https://www.cnblogs.com/yuqing6/p/7440549.html	//安装教程
+```
+
+# axios
+
+```bash
+cnpm install axios --save
+axios.get('/static/mock/index.json').then(this.showGetInfo())
+showGetInfo(res){
+	console.log(res);
+}
+//项目中的文件夹只有mock文件夹可以被外部进行访问，所以测试数据应该放在这，当时不该路径写死，可以用官方的代理功能进行映射
+/config/index.js
+
+ dev: {
+    // Paths
+    assetsSubDirectory: 'static',
+    assetsPublicPath: '/',
+    proxyTable: {
+      '/api':{	//添加
+        target:'http://localhost:8080',
+        pathRewrite:{
+          '^/api': '/static/mock'
+        }
+      }
+    },
+   //添加一个路径的代理即可，这样就可以再开发环境进行代理 
+```
+
+# 类app页面滚动效果 Better-scroll
+
+```html
+网页原版的上下拖动效果比较难看，需要使用插件,先将要禁止拖动的区域,
+position:absolute
+top:1.58rem			//1.58是为了将头部让出来，头部会一直在上方，根据自己的元素大小更改
+left:0
+right:0
+bottom:0
+overflow:hidden
+cnpm install better-scroll --save
+//在要使用的页面中
+@import Bsscroll from 'better-scroll'
+mounted(){
+	this.scroll = new Bsscroll(this.$ref.wrapper);	//将要滚动的dom元素放入
+}
+//上拉下拉效果和弹性效果
+```
+
+# alplabet效果
+
+```html
+为元素添加:ref="letter"
+监听
+letter(){
+	if(!!this.letter){
+		const element = this.$refs[this.letter][0];
+		this.scroll.scrollToElement(element);
+	}
+}
+
+    handleLetterClick (e) {
+      this.$emit('change', e.target.innerText)
+    },
+    handleTouchStart () {
+      this.touchStatus = true
+    },
+    handleTouchMove (e) {
+      if (this.touchStatus) {
+        if (this.timer) {
+          clearTimeout(this.timer)
+        }
+        this.timer = setTimeout(() => {		//拖动效果也会产生页面的变化
+          const touchY = e.touches[0].clientY - 79
+          const index = Math.floor((touchY - this.startY) / 20)
+          if (index >= 0 && index < this.letters.length) {
+            this.$emit('change', this.letters[index])
+          }
+        }, 16)
+      }
+    },
+    handleTouchEnd () {
+      this.touchStatus = false
+    }
+```
+
+# vuex
+
+```javascript
+//state中存储的是公用的数据，我们如果想修改数据通过dispatch方法调用actions,然后通过commit方法操作mutations，最后通过mutate来操作state
+cnpm install vuex --save
+
+//创建index.js文件,如果拆分成多个文件，每个export default即可  
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex)
+const state = {
+    count: 0
+}
+const mutations = {		//页面中的方法分发到action,action调用mutation
+    //增加的mutation
+    increment(state，{item}){	//接受传过来的参数item
+        state.count++;
+    },
+    decrement(state){
+        state.count--;
+    }
+}
+const actions = {
+    incrment({commit,state}，item){	//如果不需要读取state可以不写,还可以接受传过来的数据 
+        commit('increment')
+    }
+}
+const getters = {	//写计算属性返回数据的方法
+    
+}
+
+export default new Vuex.Store(
+	state,		//状态对象
+    mutations,	//包含多个更新state的对象
+    actions,	//包含多个对应事件回调函数的对象
+    getters		//包含多个getter计算属性函数的对象
+)
+    
+//main.js，下面引入
+import store from  ./store' 
+
+<div>$store.state.count</div> 
+
+//页面中的方法
+increment(){
+   this.$store.dispatch('incrment');	//出发store中的actions
+}
+
+//简化写法
+import {mapState,mapGetters,mapActions} from 'vuex'
+//读取属性都应该放在计算属性里，actions都放在methods里 
+methods:{
+    ...mapActions['increment','decrement']	//这样的话页面中的方法就和store中的对应起来，名称一样
+}
+```
+
+# 项目的打包发布
+
+```bash
+npm run build		//打包
+cnpm install -g serve	//安装服务器
+serve dist 
+```
+
+## 使用tomcat
+
+```bash
+webpack.prod.conf.js	//文件修改
+  output: {
+    path: config.build.assetsRoot,
+    filename: utils.assetsPath('js/[name].[chunkhash].js'),
+    chunkFilename: utils.assetsPath('js/[id].[chunkhash].js'),
+    publicPath: 'vue_demo'		//添加项目名
+  },
+  重新打包，将dist复制一份改名vue_demo
+  
+```
+
+# Mint-ui
+
+```bash
+cnpm install --save mint-ui
+npm install --save-dev babel-plugin-component	//安装
+
+//修改babelrc配置文件
+{
+  "presets": [
+    ["es2015", { "modules": false }]
+  ],
+  "plugins": [["component", [
+    {
+      "libraryName": "mint-ui",
+      "style": true
+    }
+  ]]]
+}
+//将这部分添加到项目的配置文件的插件部分，将Mint-ui的部分按需打包
+["component", [
+    {
+      "libraryName": "mint-ui",
+      "style": true
+    }
+  ]]
+```
+
+# keep-alive
+
+```html
+//缓存路由组件
+只能缓存路由组件
+    <keep-alive>
+      <router-link to="/list">
+        <div class="to-page">点击到列表页面</div>
+      </router-link>
+    </keep-alive>
+```
+
+# 编程式路由导航
+
+```vue
+this.$router.push();	//相当于点击路由连接可以返回
+this.$router.replace()	//用新路由代替当前路由(不可以返回当前路由界面)
+this.$router.back()		//回退
+```
+
+# render
+
+```js
+//渲染函数
+render: h => h(App)
+
+//相当于
+el: '#app'
+render:function(createElement){
+	return createElement(App);
+}
+//创建了一个元素并插入到#app页面当中
 ```
 
