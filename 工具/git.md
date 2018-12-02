@@ -58,7 +58,6 @@ git add good.txt	//添加
 git rm --cached good.txt	//从缓存区移除文件
 cat good.txt	//查看文件，猫一眼文件
 git commit . -m "second commit"	//对于没有跟踪的文件必须要先add，但是对一个已经add的文件，可以直接提交，但是要-m添加信息
-
 ```
 
 # vim编辑器

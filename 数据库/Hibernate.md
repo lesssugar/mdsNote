@@ -24,7 +24,7 @@ session.close();
 sessionFactory.close();
 ```
 
-#错误集
+# 错误集
 
 ```xml
 <resources>
@@ -40,7 +40,7 @@ sessionFactory.close();
 
 # 增删改查
 
-##查
+## 查
 
 ```java
 News o = (News) session.get(News.class, 1);	//根据id获取一个对象

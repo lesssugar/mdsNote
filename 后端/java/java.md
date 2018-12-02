@@ -1,4 +1,4 @@
-#基础知识
+# 基础知识
 
 Graphical User Interface GUI 图形化界面
 
@@ -8,13 +8,13 @@ dir md cd rd cd.. cd/ del exit
 
 JDK1.8各大JVM厂商取消永久区，使用元空间，使用的是物理内存，即电脑内存多大，其可以使用多大，永久区为自己分配，如果满了垃圾回收机制会对其进行回收，使用物理内存使，此处被回收的概率变小
 
-#注释
+# 注释
 
 如果文档注释包含多段内容 用<p>标签分开
 
 @author（只出现在类和接口的文档中） @version（只出现在类和接口的文档中） @param（只出现在方法或构造器的文档中） @return（只出现在方法中） @exception（从java1.2之后也可以使用@thrown替代） @see @since @serial（也可以使用@serialField或@serialData替代） @deprecated
 
-#面向对象
+# 面向对象
 
 继承：子类继承父类，可以得到父亲的全部属性和方法（除了父类的构造方法）。
 
@@ -42,7 +42,7 @@ JDK1.8各大JVM厂商取消永久区，使用元空间，使用的是物理内�
 
 insert(int a,String b);
 
-#异常
+# 异常
 
 异常类型;Exception异常结构根类 ArithmeticException算数错误形式，如以0座除数
 
@@ -62,7 +62,7 @@ void printStackTrace()打印堆栈信息
 
 void printStackTrace(PrintStream s)
 
-#数组集合方法
+# 数组集合方法
 
 System.arrayCopy(a,b,c,d,e);a；原数组 b；被复制起始位置 C：复制到数组 d:插入到哪个位置 e:复制的长度
 
@@ -96,7 +96,7 @@ Map类 创建并储存键值对
 
 .isEmpty检测是否为空
 
-#多线程
+# 多线程
 
 什么是多线程:
 
@@ -118,7 +118,7 @@ Map类 创建并储存键值对
 
 同步锁一定要放在共享循环的内侧，线程锁可以由任意的一个对象担当多个线程的所，继承的方式由于锁的对象有多个，所以无法使用syschronized进行线程安全的保证，对于一般方法可使用this当做同步锁，对于静态方法可以使用类.class当做锁，懒汉模式线程安全问题，可以在创建对象的判断外面加锁，为了效率提高，外面再加一层判断，如果对象为null则进入创建过程，不为null直接进行对象的获取
 
-#IO
+# IO
 
 File("","");前面填写父路径，可以直接用别的路径对象，后面填写要使用的文件；
 
@@ -320,7 +320,7 @@ getClass();
 
 当使用垃圾回收无用的垃圾时。默认调用。
 
-#UML图
+# UML图
 
 充裕的UML图包括，用例图，类图，组件图，部署图，顺序图，活动图和状态机图等。
 
@@ -366,7 +366,7 @@ System.runFinalization();强制垃圾回收机制调用finalize()方法。回收
 
 ​	}
 
-#正则表达式
+# 正则表达式
 
 QQ账号 "[1-9][0-9]{4,11}"
 
@@ -546,7 +546,7 @@ LinkedHashSet底层存储元素时是无序的的但是元素本身形式是双�
 
 元注解
 
-#基础注解
+# 基础注解
 
 @Retention(RetentionPolicy.SOURCE)
 
@@ -566,7 +566,7 @@ CONSTRUCTOR	构造器	LOCAL_VARIBEL	变量		ANOTATION_TYPE注解类型		PACKAGE	
 
 @Inherited 说明被修饰的注解具有继承性
 
-#lambda
+# lambda
 
 lambda可以代替只有一个抽象函数的接口实现，告别内部类，同时还提升对集合的迭代，遍历，过滤的操作。
 
@@ -965,7 +965,7 @@ UDP协议           数据可能会丢失一些，但是速度快，可以传输
 - 无需连接，不可靠
 - 发送数据结束无需释放资源，速度快
 
-##使用Socket(套接字)进行网络编程
+## 使用Socket(套接字)进行网络编程
 
 - 端口号与IP地址的组合就叫做一个套接字，网络通信就是Scoket间的通信。
 - Socket运行程序把网络连接当做一个流，数据在两个Socket间进行IO传输

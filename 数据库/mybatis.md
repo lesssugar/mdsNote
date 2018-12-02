@@ -1,4 +1,4 @@
-#ORM
+# ORM
 
  ORM  object relationship mapping 对象关系映射，是一种数据持久化技术，他在对象模型和关系型数据之间建立起对应关系，并且提供了一种机制，通过javabean对象去操作数据库表中的数据。
 
@@ -14,7 +14,7 @@
 
 静态代码块在一个类被加载的时候执行，可以用来初始化类中的数据，避免写类中的属性直接等于多少
 
-##配置文件
+## 配置文件
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -49,7 +49,7 @@ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
 </configuration>
 ```
 
-##mapper文件
+## mapper文件
 
 ```java
 <?xml version="1.0" encoding="UTF-8"?>
@@ -404,8 +404,6 @@ PageInfo pi = (PageInfo) request.getAttribute("pageInfo");
 		}
 ```
 
-![img](D:/%E6%9C%89%E9%81%93%E7%AC%94%E8%AE%B0/qq6A8D41E5978DE6EA5AB3219203EC493B/1bd7de99033a4c019f77186188b130d7/clipboard.png)
-
 # Mybatis Generater
 
 - 导入项目
@@ -416,4 +414,76 @@ PageInfo pi = (PageInfo) request.getAttribute("pageInfo");
 - mapper的生成前两处，同上
 - dao的生成前两处，同上
 - 表的生成策略，每张表两处*
+
+# 通用Mapper
+
+虽然逆向工程可以自动生成常用sql语句，但是实体类不能随便修改，修改有可能出现问题，通用mapper的使用在实体类修改后会跟着一起修改
+
+``` xml
+考虑到java的基本数据类型在类中都有默认值，会导致myBatis在执行相关操作时，很难判断其是否为null，尽可能不要使用基本数据类型，都是用对应的包装类型
+       <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper</artifactId>
+            <version>4.0.0-beta3</version>
+        </dependency>
+MapperScannerConfigurer扫描器的开头。org改为tk
+```
+
+```java
+/**
+ * @author lesssugar
+ * @date ${time}
+ * @description
+ */
+public interface UserMapper extends Mapper<User>{
+    
+}
+
+   @Autowired
+    private UserMapper userMapper;
+
+    @Override
+    public User getOne(User user) {
+        return userMapper.selectOne(user);
+    }
+	userMapper中不用写方法就可以调用selectOne方法，报错默认查询的是user表，当时表明叫ssm_user,需要映射，实体类上添加
+	@Table(name = "ssm_user")
+	public class User {
+    //映射字段    
+    @Column(name = "password")
+    private String password; // 密码
+```
+
+## 方法
+
+```java
+List<T> select(T var1);				//通过对象返回集合
+List<T> selectAll();				//返回全部对象
+int selectCount(T var1);			//返回总数
+T selectByPrimaryKey(Object var1);	 //根据主键查询一个对象 ，需要指定主键，不指定所有的都当做主键
+@Id
+private Integer id; // 主键
+boolean existsWithPrimaryKey(Object var1);//根据主键查询一个用户是否存在，一般是根据用户名查询是否存在，不好用，sql写法可以学习
+select case when count(emp_id) > 0 then 1 else 0 as result from table ssm_emp where emp_id = ?
+```
+
+```java
+int insert(T var1);			//插入一个对象
+int insertSelective(T var1);	//根据条件插入对象，条件可以为空
+//主键值得回写
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)	//基于自增，基于序列官方查文档
+private Integer id; // 主键
+//回写一般在插入一个对象且需要插入该对象的子对象的时候作为外键使用
+```
+
+```java
+int updateByPrimaryKey(T var1);				//根据id修改记录
+int updateByPrimaryKeySelective(T var1);	//根据选择性的条件修改记录
+```
+
+```java
+int delete(T var1);						//根据条件进行删除，如果所有条件没有，则删库，准备跑路，使用前应该对实体对象进行判断
+int deleteByPrimaryKey(Object var1);		//根据用户id删除记录，一般使用这个
+```
 

@@ -16,9 +16,13 @@ CentOs		Redhat		Ubuntu		Suse		红旗Linux
 
 # 安装
 
-## vm
+## linux的安装
 
-在内存中划分空间，在空间里安装系统，安装好的系统可以移植
+```bash
+systemctl stop firewalld.service
+ststemctl disable firewalld.service	//开机禁用防火墙
+vim /etc/systemconfig/selinux	删除enforcing,改成disabled
+```
 
 ## CentOs
 
@@ -715,5 +719,18 @@ RESULT = `ls -l /home`	对于命令返回值用``反引号
 DATE = $(date)	//同上面的功能，推荐。看起来直观
 
 全局环境变量，可以供其他shell使用
+```
+
+# 问题处理
+
+```bash
+yum缓存清空
+rm -rf /var/cache/yum/*
+yum clean all
+```
+
+```bash
+[emerg] open() "/var/run/nginx/nginx.pid" failed (2: No such file or directory)
+https://blog.csdn.net/qq1137623160/article/details/74029744
 ```
 

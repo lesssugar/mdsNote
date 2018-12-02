@@ -270,6 +270,7 @@ new Vue({
 ```html
 <router-view/>		//当前路由对应的路径
 找到router文件夹下的index.js
+<router-link to="" tag="div"></router-link>	//将这个路由渲染成div
 ```
 
 ```js
@@ -599,6 +600,12 @@ methods:{
 }
 ```
 
+## vuex的模块化
+
+```js
+
+```
+
 # 项目的打包发布
 
 ```bash
@@ -651,13 +658,14 @@ npm install --save-dev babel-plugin-component	//安装
 # keep-alive
 
 ```html
-//缓存路由组件
-只能缓存路由组件
+//缓存路由和组件
     <keep-alive>
       <router-link to="/list">
         <div class="to-page">点击到列表页面</div>
       </router-link>
     </keep-alive>
+//可以给App.vue中的router-view写在里面，可以提高页面重用性
+activated对应缓存的页面重新显示的生命周期
 ```
 
 # 编程式路由导航
@@ -667,6 +675,10 @@ this.$router.push();	//相当于点击路由连接可以返回
 this.$router.replace()	//用新路由代替当前路由(不可以返回当前路由界面)
 this.$router.back()		//回退
 ```
+
+# 动态路由
+
+ 
 
 # render
 
@@ -682,3 +694,8 @@ render:function(createElement){
 //创建了一个元素并插入到#app页面当中
 ```
 
+# ip地址访问
+
+默认启动方式不能通过本机ip地址进行访问
+
+webpack-dev-server --host 0.0.0.0即可
