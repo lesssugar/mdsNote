@@ -16,11 +16,13 @@
 # 写配置类
 
 ```java
+@EnableSwagger2
+
 /**
      * group :rest
      * 扫描注解了@ApiOperation的方法生成API接口文档
      * @return
-     */
+     */	
     @Bean
     public Docket RestApi() {
         return new Docket(DocumentationType.SWAGGER_2)

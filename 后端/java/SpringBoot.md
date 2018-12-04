@@ -429,6 +429,7 @@ logging.level.com.wyq.initboot=trace
 #日志输出地址
 logging.path=log	//log指的是项目下的文件夹，日志文件默认名字叫spring.log
 logging.pattern.console=
+https://blog.csdn.net/abysscarry/article/details/80196628
 ```
 
  SpringBoot默认帮我们配置好了日志；在
