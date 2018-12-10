@@ -544,6 +544,12 @@ letter(){
     }
 ```
 
+# vue-scroll
+
+```javascript
+https://vuescrolljs.yvescoding.org/zh/demo/
+```
+
 # vuex
 
 ```javascript
@@ -598,12 +604,6 @@ import {mapState,mapGetters,mapActions} from 'vuex'
 methods:{
     ...mapActions['increment','decrement']	//这样的话页面中的方法就和store中的对应起来，名称一样
 }
-```
-
-## vuex的模块化
-
-```js
-
 ```
 
 # 项目的打包发布
